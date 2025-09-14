@@ -1,0 +1,15 @@
+﻿Do{
+import-module activedirectory
+Write-Output "This script will run against all domains in the ADS forest"
+$allDomains = (Get-ADForest).Domains | %{ Get-ADDomainController -Discover -Domain $_ }
+$user = Read-Host -Prompt 'Enter the username of the individual you want account details for'
+$allDomains | % { 
+$domain = $_.Domain
+Write-Output "Checking for user in $domain domain"
+If (Get-ADUser -Server $_ -Filter {samaccountname -eq $user} -Properties * ) {
+     Get-ADUser -Server $_ -Filter {samaccountname -eq $user} -Properties * }
+     Else { Write-Output "User NOT found in $domain domain" }
+}
+$response = read-host "Would you like to search for another user (Y/N)?"
+}
+while ($response -like "Y*")
